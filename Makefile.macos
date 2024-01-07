@@ -1,7 +1,7 @@
 all: clean build run
 
 build:
-	gcc -std=c99 -Wall -Wextra -pedantic src/*.c -o snake -rpath vendor/macos -F vendor/macos -framework SDL2
+	gcc -std=c99 -Wall -Wextra -pedantic src/*.c -o snake -rpath target/lib -I target/include `target/bin/sdl2-config --cflags --libs`
 
 run:
 	./snake

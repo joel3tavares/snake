@@ -1,3 +1,5 @@
 .vscode/
 .DS_Store
 snake
+target/
+vendor/SDL2/build/
