@@ -1,0 +1,10 @@
+all: clean build run
+
+build:
+	gcc -std=c99 -Wall -Wextra -pedantic src/*.c -o snake -I target/include `target/bin/sdl2-config --cflags --libs`
+
+run:
+	./snake
+
+clean:
+	rm -f snake
