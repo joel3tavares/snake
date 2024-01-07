@@ -1,0 +1,10 @@
+all: clean build run
+
+build:
+	gcc -std=c99 -Wall -Wextra -pedantic src/*.c -o snake -rpath vendor/macos -F vendor/macos -framework SDL2
+
+run:
+	./snake
+
+clean:
+	rm -f snake
