@@ -1,4 +1,9 @@
+PROJECT_ROOT := $(shell pwd)
+
 all: clean build run
+
+deps:
+	cd $(PROJECT_ROOT)/vendor/SDL2 && cmake -S . -B build && cmake --build build && cmake --install build --prefix $(PROJECT_ROOT)/target
 
 build:
 	gcc -std=c99 -Wall -Wextra -pedantic src/*.c -o snake -I target/include `target/bin/sdl2-config --cflags --libs`
