@@ -1,5 +1,6 @@
 #include "game.h"
 #include "snake.h"
+#include "food.h"
 #include <stdlib.h>
 #include <stdbool.h>
 #include <SDL2/SDL.h>
@@ -16,7 +17,8 @@ struct Game {
     bool running;
 
     Snake *snake;
-    Direction lastDirection;
+    Food *food;
+    Direction direction;
 };
 
 static void process_input(Game *game);
@@ -50,14 +52,15 @@ Game *game_create(const char *title, int width, int height)
     if (!game->renderer)
         return game;
 
-    game->width = width;
-    game->height = height;
-    game->snake = snake_create(10, width / 2, height / 2, 20, 20);
-    game->lastDirection = LEFT;
-    game->running = game->snake != NULL;
     game->lastTick = 0;
     game->fps = 20;
     game->fpsTime = 1000. / game->fps;
+    game->width = width;
+    game->height = height;
+    game->direction = LEFT;
+    game->snake = snake_create(2, width / 2, height / 2, 20, 20);
+    game->food = food_create(20, 20, width, height);
+    game->running = game->snake != NULL && game->food != NULL;
 
     return game;
 }
@@ -76,14 +79,19 @@ void game_run(Game *game)
 
 void game_destroy(Game *game)
 {
-    if (game && game->renderer)
-        SDL_DestroyRenderer(game->renderer);
+    if (game) {
+        if (game->renderer)
+            SDL_DestroyRenderer(game->renderer);
 
-    if (game && game->window)
-        SDL_DestroyWindow(game->window);
+        if (game->window)
+            SDL_DestroyWindow(game->window);
 
-    if (game && game->snake)
-        snake_destroy(game->snake);
+        if (game->snake)
+            snake_destroy(game->snake);
+
+        if (game->snake)
+            food_destroy(game->food);
+    }
 
     SDL_Quit();
     free(game);
@@ -101,16 +109,16 @@ static void process_input(Game *game)
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_UP:
-                        game->lastDirection = UP;
+                        game->direction = UP;
                     break;
                     case SDLK_DOWN:
-                        game->lastDirection = DOWN;
+                        game->direction = DOWN;
                     break;
                     case SDLK_LEFT:
-                        game->lastDirection = LEFT;
+                        game->direction = LEFT;
                     break;
                     case SDLK_RIGHT:
-                        game->lastDirection = RIGHT;
+                        game->direction = RIGHT;
                     break;
                 }
             break;
@@ -123,14 +131,14 @@ static void update_game(Game *game)
     // FPS
     int wait = game->fpsTime - (SDL_GetTicks64() - game->lastTick);
 
-    if (wait > 0 && wait <= game->fpsTime) {
+    if (wait > 0 && wait <= game->fpsTime)
         SDL_Delay(wait);
-    }
 
     game->lastTick = SDL_GetTicks64();
     // FPS
 
-    snake_move(game->snake, game->lastDirection);
+    snake_update(game->snake, game->direction, game->food);
+    food_update(game->food);
 }
 
 static void render(Game *game)
@@ -139,6 +147,7 @@ static void render(Game *game)
     SDL_RenderClear(game->renderer);
 
     snake_render(game->snake, game->renderer);
+    food_render(game->food, game->renderer);
 
     SDL_RenderPresent(game->renderer);
 }

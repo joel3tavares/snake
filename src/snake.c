@@ -56,6 +56,50 @@ static bool push_back(Snake *snake, SDL_Rect position)
     return true;
 }
 
+static void move(Snake *snake, Direction direction)
+{
+    struct Node *node = snake->tail;
+
+    while (node->previous != NULL) {
+        node->position = node->previous->position;
+        node = node->previous;
+    }
+
+    switch (direction) {
+        case UP:
+            snake->head->position.y -= snake->head->position.h;
+        break;
+        case DOWN:
+            snake->head->position.y += snake->head->position.h;
+        break;
+        case LEFT:
+            snake->head->position.x -= snake->head->position.w;
+        break;
+        case RIGHT:
+            snake->head->position.x += snake->head->position.w;
+        break;
+    }
+}
+
+static bool can_eat(Snake *snake, Food *food)
+{
+    SDL_Rect foodPosition = food_get_position(food);
+    SDL_Rect headPosition = snake->head->position;
+
+    return SDL_HasIntersection(&headPosition, &foodPosition);
+}
+
+static void grow(Snake *snake)
+{
+    SDL_Rect position = snake->tail->position;
+    SDL_Rect previousPosition = snake->tail->previous->position;
+    SDL_Rect newPosition = position;
+    newPosition.x = position.x + (position.x - previousPosition.x);
+    newPosition.y = position.y + (position.y - previousPosition.y);
+
+    push_back(snake, newPosition);
+}
+
 Snake *snake_create(int length, int x, int y, int w, int h)
 {
     Snake *snake = malloc(sizeof(Snake));
@@ -102,27 +146,12 @@ void snake_render(Snake *snake, SDL_Renderer *renderer)
     }
 }
 
-void snake_move(Snake *snake, Direction direction)
+void snake_update(Snake *snake, Direction direction, Food *food)
 {
-    struct Node *node = snake->tail;
+     move(snake, direction);
 
-    while (node->previous != NULL) {
-        node->position = node->previous->position;
-        node = node->previous;
-    }
-
-    switch (direction) {
-        case UP:
-            snake->head->position.y -= snake->head->position.h;
-        break;
-        case DOWN:
-            snake->head->position.y += snake->head->position.h;
-        break;
-        case LEFT:
-            snake->head->position.x -= snake->head->position.w;
-        break;
-        case RIGHT:
-            snake->head->position.x += snake->head->position.w;
-        break;
-    }
+     if (can_eat(snake, food)) {
+        food_eat(food);
+        grow(snake);
+     }
 }
