@@ -89,7 +89,7 @@ void game_destroy(Game *game)
         if (game->snake)
             snake_destroy(game->snake);
 
-        if (game->snake)
+        if (game->food)
             food_destroy(game->food);
     }
 
