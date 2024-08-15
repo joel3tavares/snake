@@ -1,6 +1,6 @@
 PROJECT_ROOT := $(shell pwd)
 
-all: clean build run
+all: clean build
 
 deps:
 	cd $(PROJECT_ROOT)/vendor/SDL2 && cmake -S . -B build && cmake --build build && cmake --install build --prefix $(PROJECT_ROOT)/target
