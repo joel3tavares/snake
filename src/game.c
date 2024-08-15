@@ -5,6 +5,8 @@
 #include <stdbool.h>
 #include <SDL2/SDL.h>
 
+#define FPS 10
+
 struct Game {
     SDL_Window *window;
     SDL_Renderer *renderer;
@@ -53,7 +55,7 @@ Game *game_create(const char *title, int width, int height)
         return game;
 
     game->lastTick = 0;
-    game->fps = 20;
+    game->fps = FPS;
     game->fpsTime = 1000. / game->fps;
     game->width = width;
     game->height = height;
