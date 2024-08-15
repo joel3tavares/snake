@@ -1,21 +1,31 @@
-# snake
+# Snake Game
 
-This project was created just to implement the doubly linked list.
+This project demonstrates the implementation of a doubly linked list through a simple snake game.
 
 ## Requirements
 
-* CMake
-* make
-* gcc
+- CMake
+- make
+- gcc
 
-## Compiling
+## Build
 
-First, compile the dependencies with the following command:
-```
-$ make deps
-```
+Follow these steps to build and run the project:
 
-And now compile and run the game:
-```
-$ make
-```
+1. **Compile dependencies**
+
+    ```sh
+    make deps
+    ```
+
+2. **Compile the project**
+
+    ```sh
+    make
+    ```
+
+3. **Run the game**
+
+   ```sh
+   $ make run
+   ```
